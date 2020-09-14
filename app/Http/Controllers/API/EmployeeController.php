@@ -13,7 +13,12 @@ class EmployeeController extends Controller
 {
     public function index()
     {
-        //
+        $employees = Employee::all();
+
+        return response([
+            'Employees' => EmployeeResource::collection($employees),
+            'message' => 'Retrieved sucessfully'
+        ], 200);
     }
 
     public function create($request)
@@ -46,20 +51,12 @@ class EmployeeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Employee $employee)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return response([
+            'Employee' => new EmployeeResource($employee),
+            'message' => 'Retrieved sucessfully'
+        ], 200);
     }
 
     /**
@@ -69,9 +66,14 @@ class EmployeeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Employee $employee)
     {
-        //
+        $employee->update($request->all());
+
+        return response([
+            'Employee' => new EmployeeResource($employee),
+            'message' => 'Updated sucessfully',
+        ], 201);
     }
 
     /**
@@ -80,8 +82,12 @@ class EmployeeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Employee $employee)
     {
-        //
+        $status = $employee->delete();
+
+        return response([
+            'message' => $status ? 'Deleted succesfully' : 'Error'
+        ], 204);
     }
 }
