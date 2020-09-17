@@ -3,8 +3,9 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
-class EmployeeResource extends JsonResource
+class CompanyResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,14 +15,17 @@ class EmployeeResource extends JsonResource
      */
     public function toArray($request)
     {
-        /* return parent::toArray($request); */
+        $url = $this->logo ? Storage::url($this->logo) : null;
+
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'lastname' => $this->lastname,
-            'company' => $this->company,
             'mail' => $this->mail,
-            'phone' => $this->phone
+            'website' => $this->website,
+            'logo' => [
+                'name' => $this->logo,
+                'url' =>  $url
+            ]
         ];
     }
 }

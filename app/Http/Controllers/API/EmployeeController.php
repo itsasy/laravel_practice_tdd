@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Employee\RegisterRequest;
 use App\Http\Resources\EmployeeResource;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use App\Models\Employee;
 
 class EmployeeController extends Controller
@@ -17,7 +16,7 @@ class EmployeeController extends Controller
 
         return response([
             'Employees' => EmployeeResource::collection($employees),
-            'message' => 'Retrieved sucessfully'
+            'message' => 'Retrieved successfully'
         ], 200);
     }
 
@@ -26,12 +25,6 @@ class EmployeeController extends Controller
         return Employee::create($request->all());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  RegisterRequest  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(RegisterRequest $request)
     {
         return response(
@@ -45,49 +38,30 @@ class EmployeeController extends Controller
         );
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show(Employee $employee)
     {
         return response([
             'Employee' => new EmployeeResource($employee),
-            'message' => 'Retrieved sucessfully'
+            'message' => 'Retrieved successfully'
         ], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Employee $employee)
     {
         $employee->update($request->all());
 
         return response([
             'Employee' => new EmployeeResource($employee),
-            'message' => 'Updated sucessfully',
+            'message' => 'Updated successfully',
         ], 201);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Employee $employee)
     {
         $status = $employee->delete();
 
         return response([
-            'message' => $status ? 'Deleted succesfully' : 'Error'
+            'message' => $status ? 'Deleted successfully' : 'Error'
         ], 204);
     }
 }

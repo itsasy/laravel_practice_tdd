@@ -72,7 +72,7 @@ class EmployeesTest extends TestCase
                         'phone' => $employee[0]->phone,
                     ]
                 ],
-                'message' => 'Retrieved sucessfully'
+                'message' => 'Retrieved successfully'
             ]);
 
         $this->assertEquals(3, Employee::all()->count());
@@ -97,7 +97,7 @@ class EmployeesTest extends TestCase
                     'mail' => $employee[1]->mail,
                     'phone' => $employee[1]->phone,
                 ],
-                'message' => 'Retrieved sucessfully'
+                'message' => 'Retrieved successfully'
             ]);
     }
 
@@ -129,7 +129,7 @@ class EmployeesTest extends TestCase
                     'mail' => $employee[2]->mail,
                     'phone' => $employee[2]->phone,
                 ],
-                'message' => 'Updated sucessfully'
+                'message' => 'Updated successfully'
             ]);
     }
 
