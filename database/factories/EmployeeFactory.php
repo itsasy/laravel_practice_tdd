@@ -9,8 +9,10 @@ $factory->define(Employee::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
         'lastname' => $faker->lastName,
-        'company' => 'San Bruno',
-        'mail' => $faker->unique()->safeEmail,
-        'phone' => $faker->unique()->phoneNumber
+        'phone' => $faker->phoneNumber,
+        'mail'=> $faker->email,
+        'slug' => $faker->slug,
+        'company_id' => factory(\App\Models\Company::class),
+        'user_id' => factory(\App\Models\User::class),
     ];
 });

@@ -14,14 +14,19 @@ class EmployeeResource extends JsonResource
      */
     public function toArray($request)
     {
-        /* return parent::toArray($request); */
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'lastname' => $this->lastname,
-            'company' => $this->company,
-            'mail' => $this->mail,
-            'phone' => $this->phone
+            'atributes' => [
+                'name' => $this->name,
+                'lastname' => $this->lastname,
+                'phone' => $this->phone,
+                'mail' => $this->mail,
+                'slug' => $this->resource->slug,
+            ],
+            'links' => [
+                'self' => route('employee.show', $this->resource),
+                'company' => route('company.show', $this->resource->company_id)
+            ]
         ];
     }
 }

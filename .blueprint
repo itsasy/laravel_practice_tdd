@@ -1,0 +1,10 @@
+created:
+    - database/factories/EmployeeFactory.php
+    - database/factories/CompanyFactory.php
+    - database/migrations/2020_09_24_022211_create_employees_table.php
+    - database/migrations/2020_09_24_022212_create_companies_table.php
+    - app/Models/Employee.php
+    - app/Models/Company.php
+models:
+    Employee: { name: string, slug: 'string unique', lastname: string, company_id: id, user_id: id }
+    Company: { name: string, slug: 'string unique', mail: string, logo: string, website: string, relationships: { hasMany: Employee } }

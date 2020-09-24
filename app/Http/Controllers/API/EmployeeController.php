@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Employee\RegisterRequest;
 use App\Http\Resources\EmployeeResource;
+use App\Http\Resources\EmployeeCollection;
 use Illuminate\Http\Request;
 use App\Models\Employee;
 
@@ -12,12 +13,7 @@ class EmployeeController extends Controller
 {
     public function index()
     {
-        $employees = Employee::all();
-
-        return response([
-            'Employees' => EmployeeResource::collection($employees),
-            'message' => 'Retrieved successfully'
-        ], 200);
+        return EmployeeCollection::make(Employee::all());
     }
 
     public function create($request)
@@ -40,10 +36,7 @@ class EmployeeController extends Controller
 
     public function show(Employee $employee)
     {
-        return response([
-            'Employee' => new EmployeeResource($employee),
-            'message' => 'Retrieved successfully'
-        ], 200);
+        return EmployeeResource::make($employee);
     }
 
     public function update(Request $request, Employee $employee)

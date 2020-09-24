@@ -15,16 +15,19 @@ class CompanyResource extends JsonResource
      */
     public function toArray($request)
     {
-        $url = $this->logo ? Storage::url($this->logo) : null;
+        $logo_url = $this->resource->logo ? Storage::url($this->resource->logo) : null;
 
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'mail' => $this->mail,
-            'website' => $this->website,
-            'logo' => [
-                'name' => $this->logo,
-                'url' =>  $url
+            'id' => $this->resource->getRouteKey(),
+            'atributes' => [
+                'name' => $this->resource->name,
+                'slug' => $this->resource->slug,
+                'mail' => $this->resource->mail,
+            ],
+            'links' => [
+                'self' => route('company.show', $this->resource),
+                'logo' => $logo_url,
+                'website' => $this->resource->website,
             ]
         ];
     }

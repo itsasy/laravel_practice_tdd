@@ -1,0 +1,15 @@
+models:
+  Employee:
+    name: string
+    lastname: string
+    slug: string unique
+    company_id: id
+    user_id: id
+  Company:
+    name: string
+    slug: string unique
+    mail: string
+    logo: string
+    website: string
+    relationships:
+      hasMany: Employee
