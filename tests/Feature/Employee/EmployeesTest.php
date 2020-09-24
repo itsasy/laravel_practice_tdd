@@ -2,29 +2,45 @@
 
 namespace Tests\Feature\Employee;
 
+use App\Models\Company;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use App\Models\Employee;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class EmployeesTest extends TestCase
 {
+    use RefreshDatabase;
     /** @test */
     public function a_user_can_be_register_a_employee()
     {
+        $this->withoutExceptionHandling();
+
         $this->acting_as_user();
 
-        $employee = $this->user_valid_data();
+        factory(Company::class)->create();
 
-        $response = $this->post('api/employee', $employee);
+        $employee = $this->user_valid_data(['logo' => null]);
+
+        $response = $this->post('api/employee', $employee)->dump();
 
         $response->assertStatus(201)
             ->assertJson([
                 "Employee" => [
                     'name' => 'Alex',
                     'lastname' => 'maldonado',
-                    'company' => 'company1',
                     'mail' => 'ale.maldo097@gmail.com',
                     'phone' => '933530122',
+                    'Company' => [
+                        'name' => 'company1',
+                        'mail' => 'ale.maldo097@gmail.com',
+                        'logo' => [
+                            'name' => null,
+                            'url' => null
+                        ],
+                        'website' => 'aea.com'
+                    ]
                 ],
                 'message' => "Created successfully"
             ]);
@@ -104,18 +120,17 @@ class EmployeesTest extends TestCase
     /** @test */
     public function a_user_can_edit_a_employee()
     {
-        $this->withoutExceptionHandling();
         $this->acting_as_user();
 
         $employee = factory(Employee::class, 3)->create();
 
-        $payload = [
+        $update = [
             'name' => 'Juancito'
         ];
 
         $response = $this->put(
             'api/employee/' . $employee[2]->id,
-            $payload,
+            $update,
             ['Accept' => 'application/json']
         );
 
@@ -158,7 +173,7 @@ class EmployeesTest extends TestCase
         return array_merge([
             'name' => 'Alex',
             'lastname' => 'maldonado',
-            'company' => 'company1',
+            'company_id' => 1,
             'mail' => 'ale.maldo097@gmail.com',
             'phone' => '933530122',
         ], $overrides);

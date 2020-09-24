@@ -17,10 +17,9 @@ class CreateEmployeeTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('lastname');
-            $table->string('company');
+            $table->integer('company_id')->unsigned()->nullable();
             $table->string('mail');
             $table->string('phone');
-            //$table->unsignedBigInteger('id_company');
             $table->timestamps();
         });
     }
@@ -32,6 +31,6 @@ class CreateEmployeeTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('employee');
+        Schema::dropIfExists('employees');
     }
 }

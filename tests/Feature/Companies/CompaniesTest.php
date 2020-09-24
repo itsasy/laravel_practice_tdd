@@ -9,16 +9,6 @@ use Illuminate\Http\UploadedFile;
 
 class CompaniesTest extends TestCase
 {
-    public function company_valid_data($overrides = []): array
-    {
-        return array_merge([
-            'name' => 'Company One',
-            'mail' => 'ale.maldo097@gmail.com',
-            'logo' => UploadedFile::fake()->image('image.png', 100, 100),
-            'website' => 'aea.com'
-        ], $overrides);
-    }
-
     /** @test */
     public function a_user_can_be_register_a_companie_no_image()
     {
@@ -31,7 +21,6 @@ class CompaniesTest extends TestCase
         ];
 
         $response = $this->post('api/company', $company);
-
 
         $response->assertStatus(201)
             ->assertJson([
@@ -48,19 +37,15 @@ class CompaniesTest extends TestCase
             ]);
     }
 
-
-
     /** @test */
     public function a_user_can_be_register_a_companie_with_image()
     {
-        $this->withoutExceptionHandling();
-
         $this->acting_as_user();
 
+        $company = factory(Company::class)->make();
 
-        $response = $this->post('api/company', $this->company_valid_data());
+        $response = $this->post('api/company', $company->toArray());
 
-        //Storage::fake('');
         Storage::disk('')->assertExists('image.png');
 
         $response->assertStatus(201)
@@ -78,9 +63,9 @@ class CompaniesTest extends TestCase
 
         $response->assertJson([
             'Company' => [
-                'name' => 'Company One',
-                'mail' => 'ale.maldo097@gmail.com',
-                'website' => 'aea.com',
+                'name' => $company['name'],
+                'mail' => $company['mail'],
+                'website' => $company['website'],
                 'logo' => [
                     'name' => 'image.png',
                     'url' => 'http://localhost/storage/image.png'
@@ -89,20 +74,19 @@ class CompaniesTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('company', [
-            'name' => 'Company One',
-            'mail' => 'ale.maldo097@gmail.com',
+            'name' => $company['name'],
+            'mail' => $company['mail'],
             'logo' => 'image.png',
-            'website' => 'aea.com'
+            'website' => $company['website'],
         ]);
     }
 
     /** @test */
     public function a_user_can_see_list_of_company_with_image()
     {
-
         $this->acting_as_user();
 
-        $data = factory(Company::class, 3)->create();
+        $company = factory(Company::class, 3)->create();
 
         $response = $this->get('api/company');
 
@@ -110,13 +94,13 @@ class CompaniesTest extends TestCase
             ->assertJson([
                 'Companies' => [
                     [
-                        'id' => $data[0]->id,
-                        'name' => $data[0]->name,
-                        'mail' => $data[0]->mail,
-                        'website' => $data[0]->website,
+                        'id' => $company[0]->id,
+                        'name' => $company[0]->name,
+                        'mail' => $company[0]->mail,
+                        'website' => $company[0]->website,
                         'logo' => [
-                            'name' => $data[0]->logo,
-                            'url' => 'http://localhost/storage/' . $data[0]->logo
+                            'name' => $company[0]->logo,
+                            'url' => 'http://localhost/storage/' . $company[0]->logo
                         ],
                     ]
                 ],
@@ -124,14 +108,11 @@ class CompaniesTest extends TestCase
             ]);
     }
 
-
     public function a_user_can_see_list_of_company_no_image()
     {
-        $this->withExceptionHandling();
-
         $this->acting_as_user();
 
-        $data = factory(Company::class, 3)->create(['logo' => null]);
+        $company = factory(Company::class, 3)->create(['logo' => null]);
 
         $response = $this->get('api/company');
 
@@ -139,12 +120,12 @@ class CompaniesTest extends TestCase
             ->assertJson([
                 'Companies' => [
                     [
-                        'id' => $data[0]->id,
-                        'name' => $data[0]->name,
-                        'mail' => $data[0]->mail,
-                        'website' => $data[0]->website,
+                        'id' => $company[0]->id,
+                        'name' => $company[0]->name,
+                        'mail' => $company[0]->mail,
+                        'website' => $company[0]->website,
                         'logo' => [
-                            'name' => $data[0]->logo,
+                            'name' => $company[0]->logo,
                             'url' => null
                         ]
                     ]
@@ -156,22 +137,20 @@ class CompaniesTest extends TestCase
     /** @test */
     public function a_user_can_see_a_company()
     {
-        $this->withoutExceptionHandling();
+        $company = factory(Company::class, 3)->create();
 
-        $data = factory(Company::class, 3)->create();
-
-        $response = $this->get('api/company/' . $data[0]->id);
+        $response = $this->get('api/company/' . $company[0]->id);
 
         $response->assertStatus(200)
             ->assertJson([
                 'Company' => [
-                    'id' => $data[0]->id,
-                    'name' => $data[0]->name,
-                    'mail' => $data[0]->mail,
-                    'website' => $data[0]->website,
+                    'id' => $company[0]->id,
+                    'name' => $company[0]->name,
+                    'mail' => $company[0]->mail,
+                    'website' => $company[0]->website,
                     'logo' => [
-                        'name' => $data[0]->logo,
-                        'url' => 'http://localhost/storage/' . $data[0]->logo
+                        'name' => $company[0]->logo,
+                        'url' => 'http://localhost/storage/' . $company[0]->logo
                     ],
                 ],
                 'message' => 'Retrieved successfully'
@@ -179,36 +158,34 @@ class CompaniesTest extends TestCase
     }
 
     /** @test */
-    public function a_user_can_edit_a_company()
+    public function a_user_can_update_an_image_to_a_company_without_an_image ()
     {
-        $this->withoutExceptionHandling();
-
-        $data = factory(Company::class, 3)->create();
+        $company = factory(Company::class, 3)->create(['logo' => null]);
 
         $this->assertDatabaseHas('company', [
-            'name' => $data[0]->name,
-            'mail' => $data[0]->mail,
-            'logo' => $data[0]->logo,
-            'website' => $data[0]->website
+            'name' => $company[0]->name,
+            'mail' => $company[0]->mail,
+            'logo' => $company[0]->logo,
+            'website' => $company[0]->website
         ]);
 
-        $actually = [
+        $update = [
             'name' => 'aeaman',
             'logo' => UploadedFile::fake()->image('image.png', 100, 100),
         ];
 
-        $response = $this->put('api/company/' . $data[0]->id, $actually);
+        $response = $this->put('api/company/' . $company[0]->id, $update);
 
         $response->assertStatus(201)
             ->assertJson([
                 'Company' => [
-                    'id' => $data[0]->id,
+                    'id' => $company[0]->id,
                     'name' => 'aeaman',
-                    'mail' => $data[0]->mail,
-                    'website' => $data[0]->website,
+                    'mail' => $company[0]->mail,
+                    'website' => $company[0]->website,
                     'logo' => [
                         'name' => 'image.png',
-                        'url' => storage_path() . $data[0]->logo
+                        'url' => storage_path() . $company[0]->logo
                     ],
                     'logo' => [
                         'name' => 'image.png',
@@ -220,29 +197,69 @@ class CompaniesTest extends TestCase
 
         $this->assertDatabaseHas('company', [
             'name' => 'aeaman',
-            'mail' => $data[0]->mail,
+            'mail' => $company[0]->mail,
             'logo' => 'image.png',
-            'website' => $data[0]->website
+            'website' => $company[0]->website
         ]);
     }
 
     /** @test */
-    public function a_user_can_delete_a_company()
+    public function a_user_can_update_and_replace_a_company_image()
     {
-        $this->withoutExceptionHandling();
-        $data = factory(Company::class, 3)->create();
+        $company = factory(Company::class, 3)->create(['logo' => 'imageWithoutUpdate.png']);
 
         $this->assertDatabaseHas('company', [
-            'name' => $data[0]->name,
-            'mail' => $data[0]->mail,
-            'logo' => $data[0]->logo,
-            'website' => $data[0]->website
+            'name' => $company[0]->name,
+            'mail' => $company[0]->mail,
+            'logo' => $company[0]->logo,
+            'website' => $company[0]->website
         ]);
 
-        $response = $this->delete('api/company/' . $data[0]->id);
+        $update = [
+            'name' => 'John Wick',
+            'logo' => UploadedFile::fake()->image('image.png', 100, 100),
+        ];
+
+        $response = $this->put('api/company/' . $company[0]->id, $update);
+
+        $response->assertStatus(201)
+            ->assertJson([
+                'Company' => [
+                    'id' => $company[0]->id,
+                    'name' => 'John Wick',
+                    'mail' => $company[0]->mail,
+                    'website' => $company[0]->website,
+                    'logo' => [
+                        'name' => 'image.png',
+                        'url' => 'http://localhost/storage/' . 'image.png'
+                    ]
+                ],
+                'message' => 'Update successfully'
+            ]);
+
+        $this->assertDatabaseHas('company', [
+            'name' => 'John Wick',
+            'mail' => $company[0]->mail,
+            'logo' => 'image.png',
+            'website' => $company[0]->website
+        ]);
+    }
+    /** @test */
+    public function a_user_can_delete_a_company()
+    {
+        $company = factory(Company::class, 3)->create();
+
+        $this->assertDatabaseHas('company', [
+            'name' => $company[0]->name,
+            'mail' => $company[0]->mail,
+            'logo' => $company[0]->logo,
+            'website' => $company[0]->website
+        ]);
+
+        $response = $this->delete('api/company/' . $company[0]->id);
 
         $this->assertDatabaseMissing('company', [
-            'name' => $data[0]->name
+            'id' => $company[0]->id
         ]);
 
         $response->assertStatus(204);
@@ -257,5 +274,4 @@ class CompaniesTest extends TestCase
 
         $response->assertStatus(403);
     }
-
 }

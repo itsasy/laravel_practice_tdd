@@ -28,7 +28,7 @@ class RegisterRequest extends FormRequest
         return [
             'name' => 'required|min:4',
             'lastname' => 'required|min:4',
-            'company' => 'required|min:4',
+            'company_id' => 'required',
             'mail' => 'required|email',
             'phone' => 'required'
         ];
